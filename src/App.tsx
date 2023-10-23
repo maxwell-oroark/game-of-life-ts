@@ -1,8 +1,8 @@
 import { useState, useCallback, JSX } from "react";
 import useInterval from "./useInterval";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
+
+type Grid = (1 | 0)[][];
 
 const NUM_ROWS = 25;
 const NUM_COLUMNS = 25;
@@ -31,8 +31,8 @@ function App(): JSX.Element {
     return getRandomTiles(NUM_ROWS, NUM_COLUMNS);
   });
   const [running, setRunning] = useState(false);
-  const runSimulation = useCallback((grid: (1 | 0)[][]) => {
-    let gridCopy = JSON.parse(JSON.stringify(grid));
+  const runSimulation = useCallback((grid: Grid) => {
+    let gridCopy: Grid = JSON.parse(JSON.stringify(grid));
     for (let i = 0; i < NUM_ROWS; i++) {
       for (let j = 0; j < NUM_COLUMNS; j++) {
         let neighbors = 0;
@@ -79,7 +79,7 @@ function App(): JSX.Element {
             <div
               key={`cell-${i}-${k}`}
               onClick={() => {
-                let newGrid = JSON.parse(JSON.stringify(grid));
+                let newGrid: Grid = JSON.parse(JSON.stringify(grid));
                 newGrid[i][k] = grid[i][k] ? 0 : 1;
                 setGrid(newGrid);
               }}
