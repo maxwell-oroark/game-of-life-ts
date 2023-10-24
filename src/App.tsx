@@ -18,6 +18,29 @@ const positions = [
   [-1, 0],
 ];
 
+function checkNeighbor(grid: Grid, x: number, y: number): number {
+  // debugger;
+  if (x < 0) {
+    x = NUM_ROWS - 1;
+  }
+  if (x >= NUM_ROWS) {
+    x = 0;
+  }
+  if (y >= NUM_COLUMNS) {
+    y = 0;
+  }
+  if (y < 0) {
+    y = NUM_COLUMNS - 1;
+  }
+  try {
+    return grid[x][y];
+  } catch (err) {
+    console.log(err);
+    console.log({ grid, x, y });
+    throw err;
+  }
+}
+
 const getRandomTiles = (numRows: number, numCols: number) => {
   const rows = [];
   for (let i = 0; i < numRows; i++) {
@@ -31,6 +54,12 @@ function App(): JSX.Element {
     return getRandomTiles(NUM_ROWS, NUM_COLUMNS);
   });
   const [running, setRunning] = useState(false);
+  const clearGrid = () => {
+    const newGrid = Array(NUM_COLUMNS)
+      .fill(null)
+      .map(() => Array(NUM_ROWS).fill(0));
+    setGrid(newGrid);
+  };
   const runSimulation = useCallback((grid: Grid) => {
     let gridCopy: Grid = JSON.parse(JSON.stringify(grid));
     for (let i = 0; i < NUM_ROWS; i++) {
@@ -41,9 +70,7 @@ function App(): JSX.Element {
           const newI = i + x;
           const newJ = j + y;
 
-          if (newI >= 0 && newI < NUM_ROWS && newJ >= 0 && newJ < NUM_COLUMNS) {
-            neighbors += grid[newI][newJ];
-          }
+          neighbors += checkNeighbor(grid, newI, newJ);
         });
 
         if (neighbors < 2 || neighbors > 3) {
@@ -60,12 +87,12 @@ function App(): JSX.Element {
     () => {
       runSimulation(grid);
     },
-    running ? 150 : null
+    running ? 200 : null
   );
 
   return (
     <>
-      <h1>Conway Game of Life</h1>
+      <h1>Conway's Game of Life</h1>
       <div
         style={{
           display: "grid",
@@ -94,11 +121,18 @@ function App(): JSX.Element {
         )}
       </div>
       <button
+        style={{ backgroundColor: "#F68E5F" }}
         onClick={() => {
           setRunning(!running);
         }}
       >
         {running ? "Stop" : "Start"}
+      </button>
+      <button
+        style={{ backgroundColor: "#d3d3d3", marginLeft: 10 }}
+        onClick={clearGrid}
+      >
+        Clear
       </button>
     </>
   );
